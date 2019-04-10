@@ -8,6 +8,11 @@ from requests import session
 
 def download(id, session):
     req = session.get('https://osu.ppy.sh/d/' + id, stream=True)
+    
+    if 'Content-Disposition' not in req.headers:
+        print('Beatmap %s could not be found will be skipped' % id)
+        return
+
     osz = req.headers['Content-Disposition'][21:-2]
     print(osz)
     osz = re.sub(r'(?:["*:<>?\\]|\/|\|)', ' ', osz)
