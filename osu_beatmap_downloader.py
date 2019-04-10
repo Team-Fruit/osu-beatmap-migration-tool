@@ -37,7 +37,7 @@ def main():
         ids = json.load(f)
 
     if args.skip:
-        for id in map(lambda path: path.split(' ')[0], glob.glob('*.osz')):
+        for id in map(lambda path: path.split(' ')[0], glob.iglob('*.osz')):
             ids.remove(id)
 
     with session() as s:
@@ -50,7 +50,6 @@ def main():
             'login': 'Login'
         }
         res = s.post('https://osu.ppy.sh/forum/ucp.php', data=para)
-        print(res.headers)
 
         with Pool(4) as p:
             p.map(partial(download, session=s), ids)       
