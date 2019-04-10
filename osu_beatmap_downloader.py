@@ -49,7 +49,9 @@ def main():
             'sid': '',
             'login': 'Login'
         }
-        r = s.post('http://osu.ppy.sh/forum/ucp.php', data=para)
+        res = s.post('https://osu.ppy.sh/forum/ucp.php', data=para)
+        print(res.headers)
+
         with Pool(4) as p:
             p.map(partial(download, session=s), ids)       
 
