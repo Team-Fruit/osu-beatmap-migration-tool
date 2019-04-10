@@ -1,3 +1,4 @@
+import argparse
 import sys
 import json
 import re
@@ -5,6 +6,11 @@ from multiprocessing import Pool
 from functools import partial
 from requests import session
 
+
+parser = argparse.ArgumentParser(description='osu! beatmap downloader')
+
+parser.add_argument('username', help='osu! account username')
+parser.add_argument('password', help='osu! account password')
 
 def download(id, session):
     req = session.get('https://osu.ppy.sh/d/' + id, stream=True)
@@ -23,15 +29,12 @@ def download(id, session):
                 o.flush()
 
 def main():
-    args = sys.argv
-    if len(args) != 3:
-        print('osu account id, password is required')
-        return
+    args = parser.parse_args()
     with session() as s:
         para = {
             'action': 'login',
-            'username': args[1],
-            'password': args[2],
+            'username': args.username,
+            'password': args.password,
             'redirect': 'index.php',
             'sid': '',
             'login': 'Login'
