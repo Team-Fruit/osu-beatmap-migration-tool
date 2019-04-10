@@ -2,6 +2,7 @@ import argparse
 import sys
 import json
 import re
+import glob
 from multiprocessing import Pool
 from functools import partial
 from requests import session
@@ -11,6 +12,7 @@ parser = argparse.ArgumentParser(description='osu! beatmap downloader')
 
 parser.add_argument('username', help='osu! account username')
 parser.add_argument('password', help='osu! account password')
+parser.add_argument('-s', '--skip', help='Skip if beatmap file already exists', action='store_true')
 
 def download(id, session):
     req = session.get('https://osu.ppy.sh/d/' + id, stream=True)
@@ -30,6 +32,14 @@ def download(id, session):
 
 def main():
     args = parser.parse_args()
+
+    with open('beatmaps.json', 'r') as f:
+        ids = json.load(f)
+
+    if args.skip:
+        for id in map(lambda path: path.split(' ')[0], glob.glob('*.osz')):
+            ids.remove(id)
+
     with session() as s:
         para = {
             'action': 'login',
@@ -40,8 +50,6 @@ def main():
             'login': 'Login'
         }
         r = s.post('http://osu.ppy.sh/forum/ucp.php', data=para)
-        with open('beatmaps.json', 'r') as f:
-            ids = json.load(f)
         with Pool(4) as p:
             p.map(partial(download, session=s), ids)       
 
