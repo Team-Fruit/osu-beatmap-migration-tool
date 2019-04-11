@@ -31,7 +31,8 @@ def pbar_desc_size():
 async def download(session, position_manager, url):
     async with session.get(url) as res:
         if "Content-Disposition" not in res.headers:
-            tqdm.write("Beatmap {} could not be found will be skipped".format(id))
+            tqdm.write("Could not get the content: {}".format(url))
+            return
 
         osz = res.headers["Content-Disposition"][21:-2]
         osz = re.sub(r'(?:["*:<>?\\]|\/|\|)', ' ', osz)
