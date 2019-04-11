@@ -10,12 +10,6 @@ from requests import session
 from tqdm import tqdm
 
 
-parser = ArgumentParser(description='osu! beatmap downloader')
-
-parser.add_argument('username', help='osu! account username')
-parser.add_argument('password', help='osu! account password')
-parser.add_argument('-s', '--skip', help='Skip if beatmap file already exists', action='store_true')
-
 def pbar_desc_size():
     return str(int(shutil.get_terminal_size().columns/4))
 
@@ -52,7 +46,13 @@ def download(session, pids, id):
                 progress.update(len(chunk))
         progress.close()
 
-if __name__ == '__main__':
+def main():
+    parser = ArgumentParser(description='osu! beatmap downloader')
+
+    parser.add_argument('username', help='osu! account username')
+    parser.add_argument('password', help='osu! account password')
+    parser.add_argument('-s', '--skip', help='Skip if beatmap file already exists', action='store_true')
+
     args = parser.parse_args()
 
     with open('beatmaps.json', 'r') as f:
@@ -86,3 +86,6 @@ if __name__ == '__main__':
                     if c:
                         tqdm.write(c)
                     pass    
+
+if __name__ == '__main__':
+    main()
