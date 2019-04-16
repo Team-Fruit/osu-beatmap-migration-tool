@@ -3,6 +3,7 @@ import aiohttp
 import asyncio
 import re
 import shutil
+import os
 from argparse import ArgumentParser
 from tqdm import tqdm
 
@@ -49,15 +50,17 @@ async def download(session, position_manager, url):
                 position=position_manager.get_position(url),
                 bar_format='{desc:'+desc_size+'.'+desc_size+'}{percentage:3.0f}%|{bar}{r_bar}')
         
-        with open(osz, "wb") as o:
+        with open(osz+".obddownload", "wb") as o:
             while True:
                 chunk = await res.content.read(4 * 1024)
                 if not chunk:
                     break
                 o.write(chunk)
                 progress.update(len(chunk))
-            progress.close()
-            position_manager.done(url)
+
+        os.rename(osz+".obddownload", osz)
+        progress.close()
+        position_manager.done(url)
 
 async def parallel_download(username, password, ids, limit=4):
     async with aiohttp.ClientSession() as session:
